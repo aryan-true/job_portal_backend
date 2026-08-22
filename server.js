@@ -4,13 +4,14 @@ import {sRouter} from "./APIs/sAPI.js"
 import {eRouter} from "./APIs/eAPI.js"
 import {aRouter} from "./APIs/aAPI.js"
 import mongoose from "mongoose"
+import cookieParser from "cookie-parser";
 
 dotenv.config()
 const app = express()
 
 //Middlewares
 app.use(express.json())
-
+app.use(cookieParser())
 //API Router
 app.use('/s-api/',sRouter)
 app.use('/e-api/',eRouter)
