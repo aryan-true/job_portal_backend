@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Types} from "mongoose";
 
 const userSchema = new Schema(
     {
@@ -21,7 +21,7 @@ const userSchema = new Schema(
         password: {
             type: String,
             required: [true, "Password is required"],
-            minlength: [8, "Password must be at least 8 characters long"] // Stored as hash
+            minlength: [8, "Password must be at least 8 characters long"]
         },
         role: {
             type: String,
@@ -46,6 +46,11 @@ const userSchema = new Schema(
             type: String,
             required: [true, "Education is required"],
             maxlength: [100, "Education cannot exceed 100 characters"]
+        },
+        appliedJobs: {
+            type:[Types.ObjectId],
+            ref:"Post",
+            default:[]
         }
     },
     {

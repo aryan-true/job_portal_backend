@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 export function verifyToken(req, res, next) {
-  let accessToken = req.cookies.accessToken;
+  let accessToken = req.cookies.AccessToken || req.cookies.accessToken;
   if (accessToken === undefined) {
     res.status(401).json({ success: false, message: "You must login to continue" });
   } else {
