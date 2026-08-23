@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose"
+import { Schema, model } from "mongoose";
 
 const postSchema = new Schema(
     {
@@ -24,7 +24,10 @@ const postSchema = new Schema(
         },
         employmentType: {
             type: String,
-            enum: ["full-time", "part-time", "contract", "internship", "remote"],
+            enum: {
+                values: ["full-time", "part-time", "contract", "internship", "remote"],
+                message: "Invalid employment type"
+            },
             required: [true, "Employment type is required"],
             default: "full-time"
         },
@@ -40,7 +43,8 @@ const postSchema = new Schema(
         ],
         experienceRequired: {
             type: Number,
-            default: 0
+            default: 0,
+            min: [0, "Experience required cannot be negative"]
         },
         postedDate: {
             type: Date,
@@ -51,15 +55,23 @@ const postSchema = new Schema(
         },
         status: {
             type: String,
-            enum: ["open", "closed", "paused"],
+            enum: {
+                values: ["open", "closed", "paused"],
+                message: "Job status must be open, closed, or paused"
+            },
             default: "open"
+        },
+        postedBy: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: [true, "postedBy employer user ID is required"]
         }
     },
     {
         versionKey: false,
         timestamps: true,
-        strict: "throw"
+        strict: true
     }
-)
+);
 
-export const Post = model("Post", postSchema)
+export const Post = model("Post", postSchema);

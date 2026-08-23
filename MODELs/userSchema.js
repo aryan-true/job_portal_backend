@@ -1,4 +1,4 @@
-import { Schema, model, Types} from "mongoose";
+import { Schema, model } from "mongoose";
 
 const userSchema = new Schema(
     {
@@ -15,8 +15,7 @@ const userSchema = new Schema(
             unique: true,
             lowercase: true,
             trim: true,
-            minlength: [10, "Email must be at least 10 characters long"],
-            maxlength: [50, "Email cannot exceed 50 characters"]
+            match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, "Please provide a valid email address"]
         },
         password: {
             type: String,
@@ -25,16 +24,17 @@ const userSchema = new Schema(
         },
         role: {
             type: String,
-            enum: ["jobseeker", "employer", "admin"],
+            enum: {
+                values: ["jobseeker", "employer", "admin"],
+                message: "Role must be either jobseeker, employer, or admin"
+            },
             required: [true, "Role is required"],
             default: "jobseeker"
         },
         skills: [
             {
                 type: String,
-                trim: true,
-                minlength: [1, "Skill cannot be empty"],
-                maxlength: [50, "Skill name cannot exceed 50 characters"]
+                trim: true
             }
         ],
         experience: {
@@ -44,20 +44,27 @@ const userSchema = new Schema(
         },
         education: {
             type: String,
-            required: [true, "Education is required"],
-            maxlength: [100, "Education cannot exceed 100 characters"]
-        },
-        appliedJobs: {
-            type:[Types.ObjectId],
-            ref:"Post",
-            default:[]
+            trim: true,
+            default: ""
         }
     },
     {
         versionKey: false,
         timestamps: true,
-        strict: "throw"
+        strict: true,
+        toJSON: {
+            transform: (doc, ret) => {
+                delete ret.password;
+                return ret;
+            }
+        },
+        toObject: {
+            transform: (doc, ret) => {
+                delete ret.password;
+                return ret;
+            }
+        }
     }
-)
+);
 
-export const User = model("User", userSchema)
+export const User = model("User", userSchema);

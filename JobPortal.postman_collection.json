@@ -1,0 +1,744 @@
+{
+	"info": {
+		"_postman_id": "jobportal-backend-api-collection-v1",
+		"name": "Job Portal Backend REST API",
+		"description": "Complete Postman API Test Collection for Job Portal Backend (Node.js + Express.js + MongoDB).\nIncludes role-based requests for Job Seekers, Employers, and Admins, automatic JWT token management, and security tests.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "seekerToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "employerToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "adminToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "jobId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "applicationId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Job Seeker APIs",
+			"item": [
+				{
+					"name": "Register Job Seeker",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Alice Seeker\",\n  \"email\": \"alice.seeker@example.com\",\n  \"password\": \"password123\",\n  \"skills\": [\"JavaScript\", \"Node.js\", \"MongoDB\"],\n  \"experience\": 2,\n  \"education\": \"B.S. Computer Science\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/s-api/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["s-api", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Job Seeker",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.environment.set(\"seekerToken\", jsonData.token);",
+									"    pm.environment.set(\"token\", jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"alice.seeker@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/s-api/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["s-api", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Own Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{seekerToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/s-api/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["s-api", "profile"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Own Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{seekerToken}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Alice Seeker Senior\",\n  \"email\": \"alice.seeker@example.com\",\n  \"skills\": [\"JavaScript\", \"Node.js\", \"Express\", \"MongoDB\", \"TypeScript\"],\n  \"experience\": 3,\n  \"education\": \"M.S. Software Engineering\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/s-api/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["s-api", "profile"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Available Open Jobs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{seekerToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/s-api/view-jobs",
+							"host": ["{{baseUrl}}"],
+							"path": ["s-api", "view-jobs"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Single Job by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{seekerToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/s-api/view-jobs/{{jobId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["s-api", "view-jobs", "{{jobId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Apply for Job",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.data && jsonData.data._id) {",
+									"    pm.environment.set(\"applicationId\", jsonData.data._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{seekerToken}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"coverLetter\": \"I have extensive experience with Node.js and REST APIs and would love to join your team.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/s-api/apply/{{jobId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["s-api", "apply", "{{jobId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Submitted Applications",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{seekerToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/s-api/view-applications",
+							"host": ["{{baseUrl}}"],
+							"path": ["s-api", "view-applications"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Application Status by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{seekerToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/s-api/view-applications/{{applicationId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["s-api", "view-applications", "{{applicationId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout Job Seeker",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{seekerToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/s-api/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["s-api", "logout"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Employer APIs",
+			"item": [
+				{
+					"name": "Register Employer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Bob Employer\",\n  \"email\": \"bob.employer@techcorp.com\",\n  \"password\": \"password123\",\n  \"company\": \"TechCorp Solutions\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/e-api/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["e-api", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Employer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.environment.set(\"employerToken\", jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"bob.employer@techcorp.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/e-api/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["e-api", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Job Posting",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.data && jsonData.data._id) {",
+									"    pm.environment.set(\"jobId\", jsonData.data._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{employerToken}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Senior Backend Engineer\",\n  \"company\": \"TechCorp Solutions\",\n  \"description\": \"Join our high-growth backend team to build scalable REST services using Node.js and MongoDB.\",\n  \"location\": \"Remote / New York\",\n  \"employmentType\": \"full-time\",\n  \"salaryRange\": {\n    \"min\": 95000,\n    \"max\": 130000\n  },\n  \"requiredSkills\": [\"Node.js\", \"Express\", \"MongoDB\", \"Docker\"],\n  \"experienceRequired\": 3,\n  \"status\": \"open\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/e-api/create-job",
+							"host": ["{{baseUrl}}"],
+							"path": ["e-api", "create-job"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Own Job Postings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{employerToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/e-api/view-jobs",
+							"host": ["{{baseUrl}}"],
+							"path": ["e-api", "view-jobs"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Specific Job Posting by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{employerToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/e-api/view-jobs/{{jobId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["e-api", "view-jobs", "{{jobId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Own Job Posting",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{employerToken}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Lead Backend Architect\",\n  \"salaryRange\": {\n    \"min\": 110000,\n    \"max\": 145000\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/e-api/update-job/{{jobId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["e-api", "update-job", "{{jobId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Job Status (open/closed/paused)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{employerToken}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"open\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/e-api/update-status/{{jobId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["e-api", "update-status", "{{jobId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Applications Received for Employer Jobs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{employerToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/e-api/view-applications",
+							"host": ["{{baseUrl}}"],
+							"path": ["e-api", "view-applications"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Application Status (accept/reject)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{employerToken}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"accepted\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/e-api/update-application-status/{{applicationId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["e-api", "update-application-status", "{{applicationId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Own Job Posting",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{employerToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/e-api/delete-job/{{jobId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["e-api", "delete-job", "{{jobId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout Employer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{employerToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/e-api/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["e-api", "logout"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Admin APIs",
+			"item": [
+				{
+					"name": "Register Admin Account",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"System Admin\",\n  \"email\": \"admin.system@jobfinder.com\",\n  \"password\": \"adminPassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/a-api/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["a-api", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.environment.set(\"adminToken\", jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin.system@jobfinder.com\",\n  \"password\": \"adminPassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/a-api/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["a-api", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View All Registered Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{adminToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/a-api/view-users",
+							"host": ["{{baseUrl}}"],
+							"path": ["a-api", "view-users"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View User by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{adminToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/a-api/view-user/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["a-api", "view-user", "{{userId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Status / Role",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{adminToken}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"role\": \"jobseeker\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/a-api/update-status/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["a-api", "update-status", "{{userId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View All Platform Job Postings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{adminToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/a-api/view-jobs",
+							"host": ["{{baseUrl}}"],
+							"path": ["a-api", "view-jobs"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Job Posting (Admin Moderation)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{adminToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/a-api/delete-job/{{jobId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["a-api", "delete-job", "{{jobId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Review Platform Applications Overview",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{adminToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/a-api/view-applications",
+							"host": ["{{baseUrl}}"],
+							"path": ["a-api", "view-applications"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout Admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{adminToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/a-api/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["a-api", "logout"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Security & Authorization Tests",
+			"item": [
+				{
+					"name": "Test Missing Auth Token (Expect 401)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 Unauthorized\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/s-api/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["s-api", "profile"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test Role Authorization Mismatch (Seeker creating job - Expect 403)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403 Forbidden\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{seekerToken}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Unauthorized Job Posting\",\n  \"company\": \"Hacker Inc\",\n  \"description\": \"Should fail\",\n  \"location\": \"Remote\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/e-api/create-job",
+							"host": ["{{baseUrl}}"],
+							"path": ["e-api", "create-job"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test Duplicate Application (Expect 400)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{seekerToken}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"coverLetter\": \"Trying to apply twice.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/s-api/apply/{{jobId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["s-api", "apply", "{{jobId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
